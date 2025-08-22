@@ -203,10 +203,6 @@ This is a test project for frontend developer applications. The codebase demonst
 - **UX Excellence**: Animations, accessibility, responsive design
 - **Production Ready**: Build optimization, performance considerations
 
-## 📄 License
-
-ISC License
-
 ---
 
 Built with ❤️ using Vue 3, TypeScript, and modern web standards.
