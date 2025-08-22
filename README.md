@@ -74,7 +74,7 @@ src/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v20 or higher)
+- Node.js (v24 or higher)
 - npm or yarn
 
 ### Installation
