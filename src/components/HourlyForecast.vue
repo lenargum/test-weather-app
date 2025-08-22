@@ -53,7 +53,7 @@
             <td>
               <div class="hour-description">
                 <div class="hour-icon">
-                  <WeatherIcon :code="hour.weathercode" />
+                  <WeatherIcon :code="hour.weathercode" style="width: inherit; height: inherit;" />
                 </div>
                 <span>{{ getWeatherDescription(hour.weathercode) }}</span>
               </div>
