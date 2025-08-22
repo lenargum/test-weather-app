@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import compression from 'vite-plugin-compression'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
     // Generate gzip compressed files
@@ -18,7 +18,7 @@ export default defineConfig({
     })
   ],
   // Configure base path for GitHub Pages
-  base: process.env.NODE_ENV === 'production' ? '/test-weather-app/' : '/',
+  base: command === 'build' ? '/test-weather-app/' : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')
@@ -48,4 +48,4 @@ export default defineConfig({
     // Development server settings
     hmr: true
   }
-})
+}))
