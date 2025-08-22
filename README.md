@@ -119,17 +119,6 @@ This project is configured for automatic deployment to GitHub Pages.
 2. **Push to main branch**: The workflow automatically builds and deploys
 3. **Access your site**: `https://USERNAME.github.io/zvonok-weather/`
 
-### Manual Deployment Setup
-1. **Replace USERNAME**: Update URLs in `index.html` and `sitemap.xml` with your GitHub username
-2. **Install gh-pages** (optional for manual deployment):
-   ```bash
-   npm install --save-dev gh-pages
-   ```
-3. **Manual deploy**:
-   ```bash
-   npm run deploy
-   ```
-
 ### Configuration Details
 - **Base path**: Configured in `vite.config.ts` for GitHub Pages subdirectory
 - **Workflow**: `.github/workflows/deploy.yml` handles CI/CD
