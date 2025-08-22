@@ -1,0 +1,218 @@
+/* Import font declarations and variables */
+@import '@/styles/fonts.css';
+@import '@/styles/variables.css';
+
+/* Root and Reset */
+:root {
+    color-scheme: light dark;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography Base */
+html {
+    height: 100dvh;
+    overflow-y: scroll;
+    max-height: 100dvh;
+    background: var(--gradient-main-background);
+    
+    /* Set base font */
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+    
+    /* Font optimization */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+body,
+#app {
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Typography Scale */
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    margin: 0;
+}
+
+h1, .h1 {
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-black);
+}
+
+h2, .h2 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+}
+
+h3, .h3 {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+}
+
+h4, .h4 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-design);
+}
+
+h5, .h5 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+}
+
+h6, .h6 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+}
+
+p {
+    font-family: var(--font-ui);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-design);
+    margin: 0;
+}
+
+span {
+    font-family: var(--font-ui);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-design);
+    margin: 0;
+}
+
+/* UI Elements should use Geologica Auto */
+button, input, select, textarea {
+    font-family: var(--font-ui);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-design);
+}
+
+/* Links */
+a {
+    font-family: var(--font-ui);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-design);
+    letter-spacing: var(--letter-spacing-design);
+
+    color: inherit;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* Code and Monospace */
+code, pre {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+}
+
+
+/* Section */
+section + section {
+    margin-top: 56px;
+}
+
+/* Utility Classes */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+.text-5xl { font-size: var(--font-size-5xl); }
+
+.font-extralight { font-weight: var(--font-weight-extralight); }
+.font-light { font-weight: var(--font-weight-light); }
+.font-regular { font-weight: var(--font-weight-regular); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+.font-extrabold { font-weight: var(--font-weight-extrabold); }
+.font-black { font-weight: var(--font-weight-black); }
+
+.font-display { 
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-design);
+}
+
+.font-primary { font-family: var(--font-primary); }
+.font-ui { font-family: var(--font-ui); }
+.font-decorative { font-family: var(--font-decorative); }
+
+/* Smooth Scrolling */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Focus Styles */
+:focus-visible {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+    background-color: var(--color-primary-light);
+    color: white;
+}
+
+/* Design System Typography Classes */
+.p1_med {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+    letter-spacing: var(--letter-spacing-design);
+}
+
+.p2_med {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-p2);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+    letter-spacing: var(--letter-spacing-design);
+}
+
+.p3_med {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+    letter-spacing: var(--letter-spacing-design);
+}
+
+.p4_med {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-design);
+    letter-spacing: var(--letter-spacing-design);
+}
