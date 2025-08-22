@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import compression from 'vite-plugin-compression'
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   plugins: [
     vue(),
     // Generate gzip compressed files
@@ -17,8 +17,8 @@ export default defineConfig(({ command }) => ({
       ext: '.br'
     })
   ],
-  // Configure base path for GitHub Pages  
-  base: process.env.NODE_ENV === 'production' ? '/test-weather-app/' : '/',
+  // Configure base path for GitHub Pages - hardcoded for deployment
+  base: '/test-weather-app/',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')
@@ -26,7 +26,7 @@ export default defineConfig(({ command }) => ({
   },
   build: {
     // Enable minification (default is 'esbuild' which is faster than 'terser')
-    minify: 'esbuild',
+    minify: 'esbuild' as const,
     // Target modern browsers for better optimization
     target: 'es2020',
     // Enable CSS code splitting
