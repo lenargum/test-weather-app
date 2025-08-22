@@ -17,8 +17,8 @@ export default defineConfig(({ command }) => ({
       ext: '.br'
     })
   ],
-  // Configure base path for GitHub Pages
-  base: command === 'build' ? '/test-weather-app/' : '/',
+  // Configure base path for GitHub Pages  
+  base: process.env.NODE_ENV === 'production' ? '/test-weather-app/' : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')

@@ -37,7 +37,12 @@ jobs:
         run: npm ci
         
       - name: Build
-        run: npm run build
+        run: |
+          echo "NODE_ENV: $NODE_ENV"
+          echo "CI: $CI" 
+          npm run build
+        env:
+          NODE_ENV: production
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
