@@ -18,7 +18,7 @@ export default defineConfig({
     })
   ],
   // Configure base path for GitHub Pages
-  base: process.env.NODE_ENV === 'production' ? '/zvonok-weather/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/test-weather-app/' : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')
