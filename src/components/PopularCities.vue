@@ -121,9 +121,6 @@
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     mask-composite: xor;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     z-index: -1;
     pointer-events: none;
