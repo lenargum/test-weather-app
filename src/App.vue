@@ -1,249 +1,198 @@
 <template>
-  <main class="wrap">
-    <div class="header-row">
-      <Tabs
+  <main class="max-w-[1440px] mx-auto p-4 md:p-6 xl:p-10 flex flex-col gap-6 md:gap-14">
+    <div
+      class="flex flex-col-reverse md:flex-row justify-start md:justify-between items-start md:items-center gap-4 md:gap-0"
+    >
+      <UITabs
         v-model="activeTab"
         :tabs="[
           { value: 'current', label: 'Главная' },
-          { value: 'weekly', label: 'Погода за неделю' }
+          { value: 'weekly', label: 'Погода за неделю' },
         ]"
       />
-      <Select 
-        v-model="city" 
-        :values="CITIES"
+      <button
+        class="h-10 md:h-[46px] px-3 md:px-4 py-2 md:py-2.5 flex items-center justify-between gap-2 md:gap-2.5 rounded-lg bg-surface hover:bg-surface-hover focus:bg-surface-hover outline-none cursor-pointer transition-all duration-200"
+        @click="testLoading = !testLoading"
+      >
+        {{ testLoading ? 'Loading' : 'Not Loading' }}
+      </button>
+      <UISelect
+        v-model="city"
+        :values="[...CITIES].sort((a, b) => a.localeCompare(b))"
       />
     </div>
 
-    <div class="weather-header">
-      <h4>Погода в городе {{ city }}</h4>
-      <p class="date p1_med">{{ formatDate(new Date()) }}</p>
-    </div>
+    <section class="transition-all duration-300 ease-in-out flex flex-col gap-6 md:gap-12">
+      <div class="flex flex-col gap-2 md:gap-3">
+        <h4>Погода в городе {{ city }}</h4>
+        <p class="text-2xl font-medium text-primary-darker">
+          {{ new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).toLowerCase() }}
+        </p>
+      </div>
 
-    <section v-if="error" class="state err">Ошибка: {{ error }}</section>
+      <div
+        v-if="error"
+        class="py-3 opacity-85 text-lg font-medium"
+      >
+        {{ error }}
+      </div>
 
-    <section v-else class="content">
-      <Transition name="tab-content" mode="out-in">
-        <div v-if="activeTab === 'current'" key="current" class="weather-dashboard">
-          <CurrentWeather 
-            :loading="loading"
-            :temperature="data?.current?.temperature" 
-            :weather-code="data?.current?.weathercode"
-            :description="data ? getWeatherDescription(data.current.weathercode) : ''"
-            :humidity="data?.currentHumidity || 0"
-            :wind-speed="data?.current?.windspeed" 
-          />
-          <HourlyForecast :loading="loading" :hourly-data="data?.hourly" />
-        </div>
-        <div v-else-if="activeTab === 'weekly'" key="weekly">
-          <WeeklyForecast 
-            :weekly-data="data?.weekly" 
-            :loading="loading"
-          />
-        </div>
-      </Transition>
+      <template v-else>
+        <Transition
+          name="tab-content"
+          mode="out-in"
+        >
+          <div
+            v-if="activeTab === 'current'"
+            key="current"
+            class="flex flex-col xl:flex-row gap-8 xl:gap-[88px]"
+          >
+            <CurrentWeather
+              :loading="loading || testLoading"
+              :temperature="data?.current?.temperature"
+              :weather-code="data?.current?.weathercode"
+              :description="data ? getWeatherDescription(data.current.weathercode) : ''"
+              :humidity="data?.currentHumidity || 0"
+              :wind-speed="data?.current?.windspeed"
+            />
+            <HourlyForecast
+              :loading="loading || testLoading"
+              :hourly-data="data?.hourly"
+            />
+          </div>
+          <div
+            v-else-if="activeTab === 'weekly'"
+            key="weekly"
+          >
+            <WeeklyForecast
+              :weekly-data="data?.weekly"
+              :loading="loading || testLoading"
+            />
+          </div>
+        </Transition>
+      </template>
     </section>
 
-    <section class="popular-cities">
+    <section
+      v-if="!error"
+      class="flex flex-col gap-8"
+    >
       <h4>Погода в популярных городах</h4>
-      <PopularCities :loading="citiesLoading" :cities="citiesWeather.filter(c => c.city !== city)"
-        @select-city="selectCity" />
+      <PopularCities
+        :loading="citiesLoading || testLoading"
+        :cities="citiesWeather.filter((c: CitySummary) => c.city !== city)"
+        @select-city="selectCity"
+      />
     </section>
 
-    <footer class="foot">Данные: Open-Meteo</footer>
+    <footer class="opacity-60 text-xs">Данные: Open-Meteo</footer>
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useWeather } from './composables/useWeather'
-import { CITIES } from './constants'
-import { getWeatherDescription } from './utils/weatherCodes'
-import CurrentWeather from './components/CurrentWeather.vue'
-import HourlyForecast from './components/HourlyForecast.vue'
-import PopularCities from './components/PopularCities.vue'
-import Select from './components/ui/Select.vue'
-import WeeklyForecast from './components/WeeklyForecast.vue'
-import Tabs from './components/ui/Tabs.vue'
+  import { ref, onMounted, watch } from 'vue'
+  import { useWeather } from './composables/useWeather'
+  import { CITIES } from './constants'
+  import { getWeatherDescription, getWeatherIconPath } from './utils/weatherCodes'
+  import CurrentWeather from './components/CurrentWeather.vue'
+  import HourlyForecast from './components/HourlyForecast.vue'
+  import PopularCities from './components/PopularCities.vue'
+  import UISelect from './components/ui/UISelect.vue'
+  import UITabs from './components/ui/UITabs.vue'
+  import WeeklyForecast from './components/WeeklyForecast.vue'
+  import type { CitySummary } from './types'
 
-// Load saved city from localStorage or default to first city
-const getSavedCity = (): string => {
-  const saved = localStorage.getItem('weather-app-selected-city')
-  return (saved && CITIES.includes(saved as any)) ? saved : CITIES[0]
-}
+  // Load saved city from localStorage or default to first city
+  const getSavedCity = (): string => {
+    const saved = localStorage.getItem('weather-app-selected-city')
+    return saved && CITIES.includes(saved as any) ? saved : CITIES[0]
+  }
 
-const city = ref<string>(getSavedCity())
+  const city = ref<string>(getSavedCity())
 
-// Load saved tab from localStorage or default to 'current'
-const getSavedTab = (): 'current' | 'weekly' => {
-  const saved = localStorage.getItem('weather-app-active-tab')
-  return (saved === 'current' || saved === 'weekly') ? saved : 'current'
-}
+  // Load saved tab from localStorage or default to 'current'
+  const getSavedTab = (): 'current' | 'weekly' => {
+    const saved = localStorage.getItem('weather-app-active-tab')
+    return saved === 'current' || saved === 'weekly' ? saved : 'current'
+  }
 
-const activeTab = ref<'current' | 'weekly'>(getSavedTab())
-const { data, loading, error, search, citiesWeather, citiesLoading, fetchAllCities } = useWeather()
+  const activeTab = ref<'current' | 'weekly'>(getSavedTab())
+  const { data, loading, error, search, citiesWeather, citiesLoading, fetchAllCities } = useWeather()
+  const testLoading = ref(false)
+  async function handleCityChange() {
+    await search(city.value)
+  }
 
-async function handleCityChange() {
-  await search(city.value)
-}
+  function selectCity(cityName: string) {
+    city.value = cityName
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
-function selectCity(cityName: string) {
-  city.value = cityName
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+  // Save city to localStorage and fetch new data when it changes
+  watch(city, newCity => {
+    localStorage.setItem('weather-app-selected-city', newCity)
+    handleCityChange()
+  })
 
-// Save city to localStorage and fetch new data when it changes
-watch(city, (newCity) => {
-  localStorage.setItem('weather-app-selected-city', newCity)
-  handleCityChange()
-})
+  // Save active tab to localStorage when it changes
+  watch(activeTab, newTab => {
+    localStorage.setItem('weather-app-active-tab', newTab)
+  })
 
-// Save active tab to localStorage when it changes
-watch(activeTab, (newTab) => {
-  localStorage.setItem('weather-app-active-tab', newTab)
-})
+  // Update page title and favicon based on current city and weather
+  watch(
+    [city, data],
+    ([newCity, newData]) => {
+      document.title = `Погода | ${newCity}`
 
-// Update page title based on current city and weather
-watch([city], ([newCity]) => {
-  document.title = `Погода | ${newCity}`
-}, { immediate: true })
+      if (newData?.current?.weathercode !== undefined) {
+        updateFavicon(newData.current.weathercode)
+      }
+    },
+    { immediate: true }
+  )
 
+  function updateFavicon(weatherCode: number) {
+    const svgPath = getWeatherIconPath(weatherCode)
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('ru-RU', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long'
-  }).toLowerCase()
-}
+    // Remove existing favicon
+    const existingLink = document.querySelector('link[rel="icon"]')
+    if (existingLink) {
+      existingLink.remove()
+    }
 
+    // Add new SVG favicon
+    const link = document.createElement('link')
+    link.rel = 'icon'
+    link.type = 'image/svg+xml'
+    link.href = svgPath
+    document.head.appendChild(link)
+  }
 
-onMounted(async () => {
-  await search(city.value)
-  fetchAllCities()
-})
+  onMounted(async () => {
+    await search(city.value)
+    fetchAllCities()
+  })
 </script>
 
 <style scoped>
-.wrap {
-  --page-padding: 40px;
-
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--page-padding);
-}
-
-@media (max-width: 1440px) {
-  .wrap {
-    --page-padding: 24px;
-  }
-}
-
-@media (max-width: 768px) {
-  .wrap {
-    --page-padding: 16px;
-  }
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 768px) {
-  .header-row {
-    flex-direction: column-reverse;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 24px;
-  }
-}
-
-
-.weather-header {
-  margin-top: 56px;
-  margin-bottom: 48px;
-}
-
-@media (max-width: 768px) {
-  .weather-header {
-    margin-top: 32px;
-    margin-bottom: 32px;
-  }
-}
-
-.content {
-  transition: all 0.3s ease;
-}
-
-.tab-content-enter-active,
-.tab-content-leave-active {
-  transition: opacity 0.2s ease, max-height 0.2s ease;
-  overflow: hidden;
-}
-
-.tab-content-enter-from,
-.tab-content-leave-to {
-  opacity: 0;
-  max-height: 120px;
-}
-
-.tab-content-enter-to,
-.tab-content-leave-from {
-  max-height: 1000px;
-}
-
-.state {
-  padding: 12px;
-  opacity: .85;
-  color: white;
-}
-
-.err {
-  color: #ff6b6b;
-}
-
-.date {
-  margin-top: 12px;
-  color: var(--color-primary-darker);
-}
-
-/* Weather Dashboard Grid Layout */
-.weather-dashboard {
-  display: flex;
-  gap: 88px;
-}
-
-@media (max-width: 1440px) {
-  .weather-dashboard {
-    flex-direction: column;
-    gap: 32px;
-  }
-}
-
-.popular-cities {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-
-.foot {
-  margin-top: 20px;
-  opacity: .6;
-  font-size: 12px;
-}
-
-@media (max-width: 768px) {
-  .current-day {
-    grid-template-columns: 1fr;
+  /* Vue transition animations */
+  .tab-content-enter-active,
+  .tab-content-leave-active {
+    transition:
+      opacity 0.2s ease,
+      max-height 0.2s ease;
+    overflow: hidden;
   }
 
-  .day-summary {
-    border-right: none;
-    border-bottom: 1px solid #8884;
-    padding-right: 0;
-    padding-bottom: 16px;
+  .tab-content-enter-from,
+  .tab-content-leave-to {
+    opacity: 0;
+    max-height: 120px;
   }
-}
+
+  .tab-content-enter-to,
+  .tab-content-leave-from {
+    max-height: 1000px;
+  }
 </style>

@@ -1,61 +1,103 @@
 <template>
-  <div :class="['skeleton', variant]" :style="{ width, height }">
-    <div class="skeleton-shimmer"></div>
-  </div>
+  <Transition
+    name="cities"
+    mode="out-in"
+  >
+    <template v-if="loading">
+      <div
+        v-if="placeholderText"
+        :key="placeholderText"
+        class="skeleton-loader relative overflow-hidden bg-white/10 rounded-md select-none"
+        :style="customStyles"
+      >
+        <span
+          class="invisible text-transparent"
+          style="
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+          "
+        >
+          {{ placeholderText }}
+        </span>
+        <div class="skeleton-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      </div>
+      <div
+        v-else
+        :key="variant"
+        class="skeleton-loader relative overflow-hidden bg-white/10"
+        :class="{
+          'rounded-full': variant === 'circle',
+          rounded: variant === 'text' || variant === 'rect',
+        }"
+        :style="customStyles"
+      >
+        <div class="skeleton-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      </div>
+    </template>
+    <component
+      :is="contentTag"
+      v-else
+      :class="$attrs.class"
+    >
+      <slot />
+    </component>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-interface Props {
-  width?: string
-  height?: string
-  variant?: 'text' | 'circle' | 'rect'
-}
+  import { computed } from 'vue'
 
-withDefaults(defineProps<Props>(), {
-  width: '100%',
-  height: '20px',
-  variant: 'rect'
-})
+  interface Props {
+    loading?: boolean
+    width?: string
+    height?: string
+    variant?: 'text' | 'circle' | 'rect'
+    // Placeholder text for size simulation - if provided, uses text-based skeleton
+    placeholderText?: string
+    // Content tag - defaults to span for inline content
+    contentTag?: string
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    width: '100%',
+    height: '20px',
+    variant: 'rect',
+    placeholderText: '',
+    loading: false,
+    contentTag: 'span',
+  })
+
+  const customStyles = computed(() => {
+    const styles: Record<string, string> = {
+      textOverflow: 'clip',
+    }
+
+    // Only apply manual sizing if not using text-based skeleton
+    if (!props.placeholderText) {
+      if (props.width) styles.width = props.width
+      if (props.height) styles.height = props.height
+      else if (props.variant === 'text') styles.height = '16px'
+    }
+
+    return styles
+  })
 </script>
 
 <style scoped>
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.skeleton.circle {
-  border-radius: 50%;
-}
-
-.skeleton.text {
-  border-radius: 4px;
-  height: 16px;
-}
-
-.skeleton-shimmer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
+  .skeleton-shimmer {
+    animation: shimmer 1.5s infinite;
   }
-  100% {
-    transform: translateX(100%);
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
   }
-}
 </style>

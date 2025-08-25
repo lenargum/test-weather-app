@@ -1,104 +1,87 @@
 <template>
-  <div class="current-weather">
-    <Transition name="weather" mode="out-in">
-      <div v-if="loading" key="loading" class="weather-main">
-        <div class="weather-icon-large">
-          <SkeletonLoader variant="circle" width="180px" height="180px" />
-        </div>
-        <SkeletonLoader width="162px" height="110px" style="border-radius: 12px;" />
-        <div class="weather-details">
-          <SkeletonLoader variant="text" width="100px" height="28px" />
-          <SkeletonLoader variant="text" width="200px" height="28px" />
-          <SkeletonLoader variant="text" width="142px" height="28px" />
-        </div>
+  <div class="p-0 flex-1">
+    <div class="flex flex-col xl:flex-row items-center gap-4 xl:gap-11">
+      <!-- Weather Icon -->
+      <div class="w-32 h-32 md:w-40 md:h-40 xl:w-[180px] xl:h-[180px] flex items-center justify-center">
+        <SkeletonLoader
+          :loading="loading"
+          variant="circle"
+          width="100%"
+          height="100%"
+          content-tag="div"
+          class="w-full h-full flex items-center justify-center"
+        >
+          <WeatherIcon
+            :code="weatherCode"
+            class="w-full h-full"
+          />
+        </SkeletonLoader>
       </div>
-      <div v-else key="content" class="weather-main">
-        <div class="weather-icon-large">
-          <WeatherIcon :code="weatherCode" />
-        </div>
 
-        <div class="font-display weather-temp">{{ Math.round(temperature) }}°</div>
+      <!-- Temperature Display -->
+      <SkeletonLoader
+        :loading="loading"
+        class="min-w-[120px] md:min-w-[140px] xl:min-w-[162px] max-w-[162px] text-center xl:text-left text-4xl md:text-5xl xl:text-display xl:font-bold"
+        :placeholder-text="temperatureText"
+        content-tag="div"
+      >
+        {{ temperatureText }}
+      </SkeletonLoader>
 
-        <div class="weather-details">
-          <span class="p3_med">{{ description }}</span>
-          <span class="p3_med">Влажность: {{ humidity }}%</span>
-          <span class="p3_med">Ветер: {{ Math.round(windSpeed) }} м/с</span>
-        </div>
+      <!-- Weather Details -->
+      <div class="flex flex-col items-start gap-2 md:gap-3 w-full xl:w-auto">
+        <SkeletonLoader
+          :loading="loading"
+          class="p3_med"
+          :placeholder-text="description || 'Солнечно'"
+        >
+          {{ description }}
+        </SkeletonLoader>
+        <SkeletonLoader
+          :loading="loading"
+          class="p3_med text-nowrap"
+          :placeholder-text="humidityText"
+        >
+          {{ humidityText }}
+        </SkeletonLoader>
+        <SkeletonLoader
+          :loading="loading"
+          class="p3_med text-nowrap"
+          :placeholder-text="windText"
+        >
+          {{ windText }}
+        </SkeletonLoader>
       </div>
-    </Transition>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import WeatherIcon from './ui/WeatherIcon.vue'
-import SkeletonLoader from './ui/SkeletonLoader.vue'
+  import { computed } from 'vue'
+  import WeatherIcon from './ui/WeatherIcon.vue'
+  import SkeletonLoader from './ui/SkeletonLoader.vue'
 
-interface Props {
-  temperature?: number
-  weatherCode?: number
-  description?: string
-  humidity?: number
-  windSpeed?: number
-  loading?: boolean
-}
+  interface Props {
+    temperature?: number
+    weatherCode?: number
+    description?: string
+    humidity?: number
+    windSpeed?: number
+    loading?: boolean
+  }
 
-withDefaults(defineProps<Props>(), {
-  temperature: 0,
-  weatherCode: 0,
-  description: '',
-  humidity: 0,
-  windSpeed: 0,
-  loading: false
-})
+  const props = withDefaults(defineProps<Props>(), {
+    temperature: 0,
+    weatherCode: 0,
+    description: '',
+    humidity: 0,
+    windSpeed: 0,
+    loading: false,
+  })
+
+  // Computed text values to avoid duplication
+  const temperatureText = computed(() => props.loading ? '25°' : `${Math.round(props.temperature)}°`)
+  const humidityText = computed(() => props.loading ? 'Влажность: 65%' : `Влажность: ${props.humidity}%`)
+  const windText = computed(() => props.loading ? 'Ветер: 12 м/с' : `Ветер: ${Math.round(props.windSpeed)} м/с`)
 </script>
 
-<style scoped>
-.current-weather {
-  padding: 0;
-  flex: 1;
-}
-
-.weather-main {
-  display: flex;
-  align-items: center;
-  gap: 44px;
-}
-
-@media (max-width: 1440px) {
-  .weather-main {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-}
-
-.weather-icon-large {
-  width: 180px;
-  height: 180px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.weather-details {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.weather-temp {
-  min-width: 162px;
-}
-
-.weather-enter-active,
-.weather-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.weather-enter-from,
-.weather-leave-to {
-  opacity: 0;
-}
-</style>

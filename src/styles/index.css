@@ -1,218 +1,183 @@
-/* Import font declarations and variables */
+/* Import Tailwind directives */
+@import 'tailwindcss';
+
+/* Import custom styles */
 @import '@/styles/fonts.css';
-@import '@/styles/variables.css';
 
-/* Root and Reset */
-:root {
-    color-scheme: light dark;
+/* Theme configuration for Tailwind v4 */
+@theme {
+  /* Font Families */
+  --font-primary: 'Geologica', system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif;
+
+  /* Colors */
+  --color-primary: rgba(255, 255, 255, 1);
+  --color-primary-dark: rgba(255, 255, 255, 0.6);
+  --color-primary-darker: rgba(255, 255, 255, 0.4);
+
+  --color-surface: rgba(255, 255, 255, 0.1);
+  --color-surface-hover: rgba(255, 255, 255, 0.2);
+  --color-surface-active: rgba(255, 255, 255, 0.3);
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.8);
+  --color-text-tertiary: rgba(255, 255, 255, 0.6);
+
+  --color-separator: rgba(233, 233, 243, 0.1);
+  --color-error: #ff6b6b;
+  --color-warning: #ffd463;
+  --color-success: #51cf66;
+
+  /* Font Weights */
+  --font-weight-extralight: 100;
+  --font-weight-light: 200;
+  --font-weight-regular: 300;
+  --font-weight-medium: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+
+  /* Font Sizes - Fixed Typography (Scale: 1.125 ratio from 18px base) */
+  --text-xs: 0.889rem; /* 14px */
+  --text-sm: 1rem; /* 16px */
+  --text-base: 1.125rem; /* 18px (base) */
+  --text-lg: 1.375rem; /* 22px (p4)*/
+  --text-xl: 1.5rem; /* 24px (p3)*/
+  --text-p2: 1.625rem; /* 26px (p2)*/
+  --text-2xl: 1.875rem; /* 30px (p1)*/
+  --text-3xl: 2.25rem; /* 36px (h4)*/
+  --text-4xl: 3rem; /* 48px (h3)*/
+  --text-5xl: 3rem; /* 48px */
+  --text-6xl: 6.25rem; /* 100px (display)*/
+  
+  /* Typography utility variants for Tailwind */
+  --text-h3: var(--text-4xl);
+  --text-p4: var(--text-base);
+  --text-display: var(--text-6xl);
+  
+  /* Font size mappings for Tailwind */
+  --font-size-h3: var(--text-h3);
+  --font-size-p4: var(--text-p4);
+  --font-size-display: var(--text-display);
+
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-design: 1.2; /* 120% - Design system standard */
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-design: -0.01em; /* -1% - Design system standard */
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* Z-index Scale */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-popover: 300;
+  --z-tooltip: 400;
+  --z-notification: 500;
+
+  /* Spacing Scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Background Gradients */
+  --color-gradient-main: linear-gradient(116.21deg, #052652 -3.25%, #2d9cdb 107.37%);
+  --color-gradient-surface: linear-gradient(
+    149.1deg,
+    rgba(255, 255, 255, 0.2) -152.28%,
+    rgba(238, 237, 237, 0.1) 110.28%
+  );
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* Typography Base */
-html {
+@layer base {
+  /* App foundation */
+  html {
     height: 100dvh;
     overflow-y: scroll;
     max-height: 100dvh;
-    background: var(--gradient-main-background);
-    
-    /* Set base font */
-    font-family: var(--font-primary);
-    font-weight: var(--font-weight-regular);
-    line-height: var(--line-height-normal);
-    color: var(--color-text-primary);
-    
+    background: var(--color-gradient-main) no-repeat center center fixed;
+
+    /* Base font settings */
+    @apply font-primary font-regular leading-design text-text-primary;
+
     /* Font optimization */
+    font-size-adjust: 0.52;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'kern' 1, 'liga' 1;
-}
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
+  }
 
-body,
-#app {
-    margin: 0;
+  body,
+  #app {
     min-height: 100vh;
-}
+  }
 
-/* Typography Scale */
-h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
-    font-family: var(--font-primary);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
-    letter-spacing: var(--letter-spacing-tight);
-    margin: 0;
-}
+  /* HTML elements and utility classes - all in base for easy override */
+  h1,
+  .h1 {
+    @apply font-bold text-5xl leading-tight tracking-tight;
+  }
 
-h1, .h1 {
-    font-size: var(--font-size-5xl);
-    font-weight: var(--font-weight-black);
-}
+  h2,
+  .h2 {
+    @apply font-bold text-3xl leading-tight tracking-tight;
+  }
 
-h2, .h2 {
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-}
+  h3,
+  .h3 {
+    @apply font-semibold text-4xl leading-snug;
+  }
 
-h3, .h3 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-snug);
-}
+  h4,
+  .h4 {
+    @apply font-semibold text-3xl;
+  }
 
-h4, .h4 {
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-design);
-}
+  h5,
+  .h5 {
+    @apply font-medium text-lg;
+  }
 
-h5, .h5 {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-}
-
-h6, .h6 {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-}
-
-p {
-    font-family: var(--font-ui);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-design);
-    margin: 0;
-}
-
-span {
-    font-family: var(--font-ui);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-design);
-    margin: 0;
-}
-
-/* UI Elements should use Geologica Auto */
-button, input, select, textarea {
-    font-family: var(--font-ui);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-design);
-}
-
-/* Links */
-a {
-    font-family: var(--font-ui);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-design);
-    letter-spacing: var(--letter-spacing-design);
-
-    color: inherit;
-    text-decoration: none;
-    transition: opacity var(--transition-fast);
-}
-
-a:hover {
-    opacity: 0.8;
-}
-
-/* Code and Monospace */
-code, pre {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-tight);
-}
+  h6,
+  .h6 {
+    @apply font-medium text-base;
+  }
 
 
-/* Section */
-section + section {
-    margin-top: 56px;
-}
-
-/* Utility Classes */
-.text-xs { font-size: var(--font-size-xs); }
-.text-sm { font-size: var(--font-size-sm); }
-.text-base { font-size: var(--font-size-base); }
-.text-lg { font-size: var(--font-size-lg); }
-.text-xl { font-size: var(--font-size-xl); }
-.text-2xl { font-size: var(--font-size-2xl); }
-.text-3xl { font-size: var(--font-size-3xl); }
-.text-4xl { font-size: var(--font-size-4xl); }
-.text-5xl { font-size: var(--font-size-5xl); }
-
-.font-extralight { font-weight: var(--font-weight-extralight); }
-.font-light { font-weight: var(--font-weight-light); }
-.font-regular { font-weight: var(--font-weight-regular); }
-.font-medium { font-weight: var(--font-weight-medium); }
-.font-semibold { font-weight: var(--font-weight-semibold); }
-.font-bold { font-weight: var(--font-weight-bold); }
-.font-extrabold { font-weight: var(--font-weight-extrabold); }
-.font-black { font-weight: var(--font-weight-black); }
-
-.font-display { 
-    font-size: var(--font-size-display);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
-    letter-spacing: var(--letter-spacing-design);
-}
-
-.font-primary { font-family: var(--font-primary); }
-.font-ui { font-family: var(--font-ui); }
-.font-decorative { font-family: var(--font-decorative); }
-
-/* Smooth Scrolling */
-@media (prefers-reduced-motion: no-preference) {
-    html {
-        scroll-behavior: smooth;
-    }
-}
-
-/* Focus Styles */
-:focus-visible {
-    outline: 2px solid var(--color-primary-light);
-    outline-offset: 2px;
-}
-
-/* Selection */
-::selection {
-    background-color: var(--color-primary-light);
-    color: white;
-}
-
-/* Design System Typography Classes */
-.p1_med {
-    font-family: var(--font-primary);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-    letter-spacing: var(--letter-spacing-design);
-}
-
-.p2_med {
-    font-family: var(--font-primary);
-    font-size: var(--font-size-p2);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-    letter-spacing: var(--letter-spacing-design);
-}
-
-.p3_med {
-    font-family: var(--font-primary);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-    letter-spacing: var(--letter-spacing-design);
-}
-
-.p4_med {
-    font-family: var(--font-primary);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-design);
-    letter-spacing: var(--letter-spacing-design);
+  /* Custom gradient backgrounds */
+  .bg-gradient-surface {
+    background: var(--color-gradient-surface);
+  }
 }

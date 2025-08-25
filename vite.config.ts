@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import compression from 'vite-plugin-compression'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(() => ({
   plugins: [
@@ -9,20 +10,22 @@ export default defineConfig(() => ({
     // Generate gzip compressed files
     compression({
       algorithm: 'gzip',
-      ext: '.gz'
+      ext: '.gz',
     }),
     // Generate brotli compressed files (better compression)
     compression({
       algorithm: 'brotliCompress',
-      ext: '.br'
-    })
+      ext: '.br',
+    }),
+    //TailwindCSS
+    tailwindcss(),
   ],
   // Configure base path for GitHub Pages - hardcoded for deployment
   base: '/test-weather-app/',
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src')
-    }
+      '@': resolve(__dirname, './src'),
+    },
   },
   build: {
     // Enable minification (default is 'esbuild' which is faster than 'terser')
@@ -36,16 +39,16 @@ export default defineConfig(() => ({
       output: {
         manualChunks: {
           // Separate vendor chunks for better caching
-          vendor: ['vue']
-        }
-      }
+          vendor: ['vue'],
+        },
+      },
     },
     // Compress assets
-    assetsInlineLimit: 4096 // Inline assets smaller than 4kb
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
   },
   // Enable compression in preview/production
   server: {
     // Development server settings
-    hmr: true
-  }
+    hmr: true,
+  },
 }))

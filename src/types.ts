@@ -1,53 +1,54 @@
 export type GeoHit = {
-    name: string
-    country: string
-    latitude: number
-    longitude: number
-  }
-  
-  export type CurrentWeather = {
-    temperature: number
-    windspeed: number
-    winddirection: number
-    weathercode: number
-    time: string
-  }
-  
-  export type HourlyWeather = {
-    time: string[]
-    temperature_2m: number[]
-    precipitation: number[]
-    weathercode: number[]
-    windspeed_10m: number[]
-    relativehumidity_2m: number[]
-  }
-  
-  export type DayForecast = {
-    date: string
-    weekday: string
-    temperature: number
-    weathercode: number
-  }
+  name: string
+  country: string
+  latitude: number
+  longitude: number
+}
 
-  export type WeatherResult = {
-    place: string
-    current: CurrentWeather
-    currentHumidity?: number
-    hourly: Array<{
-      time: string
-      temperature: number
-      precipitation: number
-      weathercode: number
-      windspeed: number
-      humidity: number
-    }>
-    weekly: DayForecast[]
-  }
-  
-  export type CitySummary = {
-    city: string
-    temperature: number
-    weathercode: number
-    humidity: number
-  }
-  
+// Base weather data
+export type BaseWeather = {
+  temperature: number
+  weathercode: number
+}
+
+// Extended weather types
+export type CurrentWeather = BaseWeather & {
+  windspeed: number
+  winddirection: number
+  time: string
+}
+
+export type HourlyWeather = {
+  time: string[]
+  temperature_2m: number[]
+  precipitation: number[]
+  weathercode: number[]
+  windspeed_10m: number[]
+  relative_humidity_2m: number[]
+}
+
+export type HourlyItem = BaseWeather & {
+  time: string
+  precipitation: number
+  windspeed: number
+  humidity: number
+}
+
+export type DayForecast = BaseWeather & {
+  date: string
+  weekday: string
+  weekdayShort: string
+}
+
+export type WeatherResult = {
+  place: string
+  current: CurrentWeather
+  currentHumidity?: number
+  hourly: HourlyItem[]
+  weekly: DayForecast[]
+}
+
+export type CitySummary = BaseWeather & {
+  city: string
+  humidity: number
+}

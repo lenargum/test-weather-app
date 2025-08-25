@@ -1,139 +1,142 @@
 <template>
-  <Transition name="cities" mode="out-in">
-    <div v-if="loading" key="loading" class="cities-grid">
-      <div v-for="i in 5" :key="i" class="city-card">
-        <div class="city-info">
-          <SkeletonLoader variant="text" width="100px" height="32px" style="border-radius: 10px;" />
-          <SkeletonLoader variant="text" width="80px" height="22px" />
-        </div>
-        <div class="city-icon">
-          <SkeletonLoader variant="circle" width="50px" height="50px" />
-        </div>
-        <SkeletonLoader variant="text" width="72px" height="62px" style="border-radius: 12px;" />
-        <SkeletonLoader variant="text" width="140px" height="22px" />
+  <div class="grid grid-cols-2 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 md:gap-8">
+    <button
+      v-for="(cityData, i) in citiesData"
+      :key="cityData.city + i"
+      class="city-card bg-gradient-surface p-4 md:p-6 gap-3 md:gap-4 hover:translate-y-[-2px] hover:shadow-md focus:outline-none focus:translate-y-[-2px] focus:shadow-md"
+      :class="{ 'pointer-events-none': loading }"
+      :aria-label="`Выбрать ${cityData.city}: ${cityData.temperatureText}, ${cityData.description}`"
+      @click="!loading && $emit('selectCity', cityData.city)"
+    >
+      <div class="flex flex-col items-center gap-1 md:gap-2">
+        <SkeletonLoader
+          :loading="loading"
+          class="text-sm md:text-p2 md:font-medium"
+          :placeholder-text="cityData.city"
+        >
+          {{ cityData.city }}
+        </SkeletonLoader>
+        <SkeletonLoader
+          :loading="loading"
+          class="text-xs md:text-base"
+          :placeholder-text="cityData.description"
+        >
+          {{ cityData.description }}
+        </SkeletonLoader>
       </div>
-    </div>
-    <div v-else-if="cities.length > 0" key="content" class="cities-grid">
-      <div v-for="cityData in cities" :key="cityData.city" class="city-card" @click="$emit('selectCity', cityData.city)">
-        <div class="city-info">
-          <div class="p2_med">{{ cityData.city }}</div>
-          <span>{{ getWeatherDescription(cityData.weathercode) }}</span>
-        </div>
-        <div class="city-icon">
-          <WeatherIcon :code="cityData.weathercode" />
-        </div>
-        <div class="h3">{{ Math.round(cityData.temperature) }}°</div>
-        <span>Влажность: {{ cityData.humidity }}%</span>
+      <div class="w-10 h-10 md:w-[60px] md:h-[60px] flex items-center justify-center">
+        <SkeletonLoader
+          :loading="loading"
+          variant="circle"
+          width="100%"
+          height="100%"
+          content-tag="div"
+          class="w-full h-full flex items-center justify-center"
+        >
+          <WeatherIcon :code="cityData.weathercode" class="w-full h-full" />
+        </SkeletonLoader>
       </div>
-    </div>
-  </Transition>
+      <SkeletonLoader
+        :loading="loading"
+        class="text-xl md:text-h3 md:font-semibold"
+        :placeholder-text="cityData.temperatureText"
+      >
+        {{ cityData.temperatureText }}
+      </SkeletonLoader>
+      <SkeletonLoader
+        :loading="loading"
+        class="text-xs md:text-base"
+        :placeholder-text="cityData.humidityText"
+      >
+        {{ cityData.humidityText }}
+      </SkeletonLoader>
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { getWeatherDescription } from '@/utils/weatherCodes'
-import WeatherIcon from './ui/WeatherIcon.vue'
-import SkeletonLoader from './ui/SkeletonLoader.vue'
+  import { computed } from 'vue'
+  import { getWeatherDescription } from '@/utils/weatherCodes'
+  import WeatherIcon from './ui/WeatherIcon.vue'
+  import SkeletonLoader from './ui/SkeletonLoader.vue'
+  import type { CitySummary } from '@/types'
+  import { CITIES } from '@/constants'
 
-interface CityWeatherData {
-  city: string
-  temperature: number
-  weathercode: number
-  humidity: number
-}
+  const props = defineProps<{
+    loading: boolean
+    cities: CitySummary[]
+  }>()
 
-defineProps<{
-  loading: boolean
-  cities: CityWeatherData[]
-}>()
+  defineEmits<{
+    selectCity: [cityName: string]
+  }>()
 
-defineEmits<{
-  selectCity: [cityName: string]
-}>()
+  const citiesData = computed(() => {
+    // Show skeleton placeholders when loading and no data
+    if (props.loading && props.cities.length === 0) {
+      const mockCities = [...CITIES].slice(0, 5)
+      return mockCities.map(city => ({
+        city,
+        weathercode: 0,
+        description: 'Солнечно',
+        temperatureText: '25°',
+        humidityText: 'Влажность: 65%',
+        temperature: 25,
+        humidity: 65,
+      }))
+    }
+    
+    // Transform actual city data
+    return props.cities.map(cityData => ({
+      ...cityData,
+      description: getWeatherDescription(cityData.weathercode),
+      temperatureText: `${Math.round(cityData.temperature)}°`,
+      humidityText: `Влажность: ${cityData.humidity}%`,
+    }))
+  })
 </script>
 
 <style scoped>
-.cities-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 32px;
-}
+  @import 'tailwindcss/theme' reference;
 
-@media (max-width: 768px) {
-  .cities-grid {
-    gap: 16px;
+  /* City card base styles - non-responsive utilities */
+  .city-card {
+    @apply relative flex flex-col items-center;
+    @apply rounded-md cursor-pointer transition-all duration-200 ease-in-out;
+    @apply text-center;
   }
-}
 
-.city-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 26px;
-  gap: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  /* Gradient border effect for city cards */
+  .city-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    padding: 1px;
+    background: linear-gradient(144.45deg, rgba(255, 255, 255, 0.4) -14.51%, rgba(255, 255, 255, 0) 117.67%);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    z-index: -1;
+    pointer-events: none;
+  }
 
-  /* Gradient border using pseudo-element */
-  background: var(--gradient-surface-background);
+  /* Vue transition animations */
+  .cities-enter-active,
+  .cities-leave-active {
+    transition: opacity 0.2s ease;
+  }
 
-  text-align: center;
-}
-
-.city-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 8px;
-  padding: 1px;
-  /* This creates the border width */
-  background: linear-gradient(144.45deg, rgba(255, 255, 255, 0.4) -14.51%, rgba(255, 255, 255, 0) 117.67%);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: xor;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  z-index: -1;
-
-  pointer-events: none;
-}
-
-.city-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.city-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.city-icon {
-  width: 60px;
-  height: 60px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.city-humidity {
-  font-size: 11px;
-  color: white;
-}
-
-.cities-enter-active,
-.cities-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.cities-enter-from,
-.cities-leave-to {
-  opacity: 0;
-}
+  .cities-enter-from,
+  .cities-leave-to {
+    opacity: 0;
+  }
 </style>
