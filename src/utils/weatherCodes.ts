@@ -1,3 +1,5 @@
+import { getIconPath } from './paths'
+
 export const weatherDescriptions: Record<number, string> = {
   0: 'Солнечно',
   1: 'Солнечно',
@@ -72,7 +74,7 @@ export function getWeatherIcon(code: number): WeatherIconType {
 
 export function getWeatherIconPath(code: number): string {
   const iconType = getWeatherIcon(code)
-  return `/icons/${iconType}.svg`
+  return getIconPath(iconType)
 }
 
 export function getWeatherIconAlt(code: number): string {

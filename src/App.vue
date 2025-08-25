@@ -10,12 +10,6 @@
           { value: 'weekly', label: 'Погода за неделю' },
         ]"
       />
-      <button
-        class="h-10 md:h-[46px] px-3 md:px-4 py-2 md:py-2.5 flex items-center justify-between gap-2 md:gap-2.5 rounded-lg bg-surface hover:bg-surface-hover focus:bg-surface-hover outline-none cursor-pointer transition-all duration-200"
-        @click="testLoading = !testLoading"
-      >
-        {{ testLoading ? 'Loading' : 'Not Loading' }}
-      </button>
       <UISelect
         v-model="city"
         :values="[...CITIES].sort((a, b) => a.localeCompare(b))"
@@ -48,7 +42,7 @@
             class="flex flex-col xl:flex-row gap-8 xl:gap-[88px]"
           >
             <CurrentWeather
-              :loading="loading || testLoading"
+              :loading="loading"
               :temperature="data?.current?.temperature"
               :weather-code="data?.current?.weathercode"
               :description="data ? getWeatherDescription(data.current.weathercode) : ''"
@@ -56,7 +50,7 @@
               :wind-speed="data?.current?.windspeed"
             />
             <HourlyForecast
-              :loading="loading || testLoading"
+              :loading="loading"
               :hourly-data="data?.hourly"
             />
           </div>
@@ -66,7 +60,7 @@
           >
             <WeeklyForecast
               :weekly-data="data?.weekly"
-              :loading="loading || testLoading"
+              :loading="loading"
             />
           </div>
         </Transition>
@@ -79,7 +73,7 @@
     >
       <h4>Погода в популярных городах</h4>
       <PopularCities
-        :loading="citiesLoading || testLoading"
+        :loading="citiesLoading"
         :cities="citiesWeather.filter((c: CitySummary) => c.city !== city)"
         @select-city="selectCity"
       />
@@ -118,7 +112,7 @@
 
   const activeTab = ref<'current' | 'weekly'>(getSavedTab())
   const { data, loading, error, search, citiesWeather, citiesLoading, fetchAllCities } = useWeather()
-  const testLoading = ref(false)
+
   async function handleCityChange() {
     await search(city.value)
   }
